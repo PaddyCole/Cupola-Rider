@@ -5,6 +5,10 @@ var ge = null;
 
 function init() {
 	google.earth.createInstance("map-canvas", initCallback, failureCallback);
+
+	if(!google.earth.isInstalled()) {
+		$('#ISSView').hide();
+	}
 }
 
 function initCallback(object) {
@@ -21,7 +25,7 @@ function initCallback(object) {
  				$.getJSON(feed, function(data) {
  					var latitude = data.iss_position.latitude;
  					var longitude = data.iss_position.longitude;
- 					
+
  					// Set new latitude and longitude values.
  					camera.setLatitude(latitude);
  					camera.setLongitude(longitude);
