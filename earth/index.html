@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100%; width:  100%;}
+      body { height: 100%; width: 100%; margin: 0; padding: 0 }
+      #map-canvas { height: 100%; width: 100% }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true">
+    </script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+       <script>
+      
+   google.load("earth", "1");
+   
+   var ge = null;
+   
+   
+   function init() {
+     google.earth.createInstance("map-canvas", initCallback, failureCallback);
+   }
+   
+   function initCallback(object) {
+     ge = object;
+     ge.getWindow().setVisibility(true);
+//     INITIAL_CAMERA_ALTITUDE = 809273.5;
+     var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	camera.setTilt(camera.getTilt() + 43);
+	camera.setRoll(camera.getRoll() + -15);
+
+     
+     setInterval(function(){	
+     				var feed = "API.php";
+     				$.getJSON(feed, function(data) {
+     					var latitude = data.iss_position.latitude;
+     					var longitude = data.iss_position.longitude;
+     					// Set new latitude and longitude values.
+     					camera.setLatitude(latitude);
+     					camera.setLongitude(longitude);
+     					camera.setAltitude(1809273.5);
+
+     					
+     					// Update the view in Google Earth.
+     					ge.getView().setAbstractView(camera);
+     					
+     					
+     				});
+     			},1000); 
+
+   }
+   
+   function failureCallback(object) {
+   }
+       </script>
+
+  </head>
+  <body onload='init()' id='body'>
+  	<div style="position: absolute; width: 100%; height: 100%; z-index: 1000;" id="ISSView"><img width="100%" src="iss-view-sharper.png" alt="View" /></div>
+    <div style="position: absolute; z-index: 0; width: a;"id="map-canvas"/>
+    
+  </body>
+</html>
