@@ -27,22 +27,45 @@ function init() {
 		$('#ISSView').hide();
 	}
 
-	$(window).resize(updateScreenOverlay);
+	
+}
 
-	myAudio = new Audio('ISSAmbient.mp3'); 
-	myAudio.addEventListener('ended', function() {
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	myAudio.play();
+function initCallback(object) {
+	ge = object;
+	ge.getWindow().setVisibility(true);
+
+	$(window).resize(updateScreenOverlay);
 
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
+			// Create the placemark.
+			var placemark = ge.createPlacemark('');
+			placemark.setName("you are here");
+
+			// Define a custom icon.
+			var icon = ge.createIcon('');
+			icon.setHref(document.URL + 'space-apps-marker.png');
+			var style = ge.createStyle('');
+			style.getIconStyle().setIcon(icon);
+			style.getIconStyle().setScale(5.0);
+			placemark.setStyleSelector(style);
+
+			// Set the placemark's location.  
+			var point = ge.createPoint('');
+			point.setLatitude(position.coords.latitude);
+			point.setLongitude(position.coords.longitude);
+			placemark.setGeometry(point);
+
+			// Add the placemark to Earth.
+			ge.getFeatures().appendChild(placemark);
+
 			//Fly to own location
 			flyToMe(position.coords.latitude, position.coords.longitude);
 
 			//Then fly to spacestation
-			setTimeout(flyToISS, 7000);
+			setTimeout(function(){
+				flyToISS(position.coords.latitude, position.coords.longitude);
+			}, 7000);
 		}, function() {
 			handleNoGeolocation(true);
 			//flyToISS();
@@ -50,19 +73,11 @@ function init() {
 	}
 }
 
-function initCallback(object) {
-	ge = object;
-	ge.getWindow().setVisibility(true);
-
-	
- 
-	
-}
-
 function failureCallback(object) {
 }
 
 function flyToMe(latitude, longitude) {
+	console.log("flyToMe " + latitude + ":" + longitude);
 	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
 	camera.setLatitude(latitude);
 	camera.setLongitude(longitude);
@@ -71,11 +86,12 @@ function flyToMe(latitude, longitude) {
 	ge.getView().setAbstractView(camera);
 }
 
-function flyToISS() {
+function flyToISS(latitude,longitude) {
+	console.log("flyToISS " + latitude + ":" + longitude);
 	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
 	camera.setAltitude(issAltitude*4);
-	camera.setLatitude(55);
-	camera.setLongitude(55);
+	camera.setLatitude(latitude);
+	camera.setLongitude(longitude);
 	ge.getOptions().setFlyToSpeed(.3);
 	ge.getView().setAbstractView(camera);
 
@@ -88,7 +104,8 @@ function flyToISS() {
 			camera.setLongitude(data.iss_position.longitude);
 			camera.setAltitude(issAltitude);
 			ge.getView().setAbstractView(camera);
-			//ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+			ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+			
 			setTimeout(initScreenOverlay,2000);
 
 			//Then set up animation
@@ -157,6 +174,13 @@ function initScreenOverlay() {
 	ge.getFeatures().appendChild(screenOverlay);
 
 	updateScreenOverlay();
+
+	myAudio = new Audio('ISSAmbient.mp3'); 
+	myAudio.addEventListener('ended', function() {
+		this.currentTime = 0;
+		this.play();
+	}, false);
+	myAudio.play();
 
 }
 
