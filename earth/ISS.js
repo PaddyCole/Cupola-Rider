@@ -40,7 +40,7 @@ function initCallback(object) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			// Create the placemark.
 			var placemark = ge.createPlacemark('');
-			placemark.setName("you are here");
+			placemark.setName("");
 
 			// Define a custom icon.
 			var icon = ge.createIcon('');
@@ -88,12 +88,12 @@ function flyToMe(latitude, longitude) {
 
 function flyToISS(latitude,longitude) {
 	console.log("flyToISS " + latitude + ":" + longitude);
-	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
-	camera.setAltitude(issAltitude*4);
-	camera.setLatitude(latitude);
-	camera.setLongitude(longitude);
-	ge.getOptions().setFlyToSpeed(.3);
-	ge.getView().setAbstractView(camera);
+	//var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	//camera.setAltitude(issAltitude*4);
+	//camera.setLatitude(latitude);
+	//camera.setLongitude(longitude);
+	//ge.getOptions().setFlyToSpeed(.3);
+	//ge.getView().setAbstractView(camera);
 
 	setTimeout(function(){
 		$.getJSON('API.php', function(data) {
@@ -134,7 +134,7 @@ function flyToISS(latitude,longitude) {
 				},1000/fps)
 			},5000);
 		});
-	},2000);
+	},1000);
 }
 
 function fetchISSLoc() {
