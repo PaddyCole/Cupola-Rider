@@ -34,7 +34,7 @@ function initCallback(object) {
 	ge = object;
 	ge.getWindow().setVisibility(true);
 
-	addLogoOverlay();
+	//addLogoOverlay();
 
 	$(window).resize(updateScreenOverlay);
 
@@ -176,6 +176,8 @@ function initScreenOverlay() {
 	ge.getFeatures().appendChild(screenOverlay);
 
 	updateScreenOverlay();
+
+
 
 	myAudio = new Audio('ISSAmbient.mp3'); 
 	myAudio.addEventListener('ended', function() {
