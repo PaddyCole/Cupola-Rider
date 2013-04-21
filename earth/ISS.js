@@ -34,6 +34,8 @@ function initCallback(object) {
 	ge = object;
 	ge.getWindow().setVisibility(true);
 
+	addLogoOverlay();
+
 	$(window).resize(updateScreenOverlay);
 
 	if(navigator.geolocation) {
@@ -192,5 +194,23 @@ function updateScreenOverlay() {
 		ge.getFeatures().getLastChild().getSize().setX($(window).height()/0.6255);
 		ge.getFeatures().getLastChild().getSize().setY($(window).height());
 	}
+}
+
+function addLogoOverlay() {
+	// Create the ScreenOverlay
+	var screenOverlay = ge.createScreenOverlay('');
+
+	// Specify a path to the image and set as the icon
+	var icon = ge.createIcon('');
+	icon.setHref(document.URL + 'logo200.png');
+	screenOverlay.setIcon(icon);
+
+	ge.getFeatures().appendChild(screenOverlay);
+	ge.getFeatures().getLastChild().getSize().setX($(window).width()/10);
+	ge.getFeatures().getLastChild().getSize().setY($(window).width()/10);
+
+	ge.getFeatures().getLastChild().getOverlayXY().setX(0.15);
+	ge.getFeatures().getLastChild().getOverlayXY().setY(0.15);
+
 }
 
