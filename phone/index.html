@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<!--    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />-->
+<title>Cupola Rider</title>
     <style type="text/css">
       html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
-      #map-canvas { height: 100% }
+      body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+      #map-canvas { height: 110% }
+      #map-canvas div.gmnoprint,
+      #map-canvas div.gmnoscreen {
+          display: none;      
+      }
     </style>
+    
+  		<!-- Sets initial viewport load and disables zooming  -->
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+
+	<!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png">
+	
+	<link rel="apple-touch-startup-image" href="iPhone_open.jpg" />  
+    
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true">
     </script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     <script type="text/javascript">
+    
+    document.ontouchstart = function(e){ 
+        e.preventDefault(); 
+    }
+    
      var map;
       function initialize() {
         var mapOptions = {
@@ -41,7 +65,7 @@
     </script>
   </head>
   <body>
-  <div style="position: absolute; width: 100%; height: 100%; z-index: 1000; overflow: hidden;" id="ISSView"><img style="margin-left: -50px;" height="100%" src="cupola.png" alt="View" /></div>
+  <div style="position: absolute; width: 100%; height: 100%; z-index: 1000; overflow: hidden;" id="ISSView"><img style="margin-left: -105px;" height="100%" src="cupola.png" alt="View" /></div>
     <div id="map-canvas"/>
   </body>
 </html>
