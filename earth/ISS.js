@@ -186,11 +186,11 @@ function initScreenOverlay() {
 
 function updateScreenOverlay() {
 	if ( ($(window).width() / $(window).height()) > aspectRatio ) {
-		ge.getFeatures().getFirstChild().getSize().setX($(window).width());
-		ge.getFeatures().getFirstChild().getSize().setY($(window).width()/1.509);
+		ge.getFeatures().getLastChild().getSize().setX($(window).width());
+		ge.getFeatures().getLastChild().getSize().setY($(window).width()/1.509);
 	} else {
-		ge.getFeatures().getFirstChild().getSize().setX($(window).height()/0.6255);
-		ge.getFeatures().getFirstChild().getSize().setY($(window).height());
+		ge.getFeatures().getLastChild().getSize().setX($(window).height()/0.6255);
+		ge.getFeatures().getLastChild().getSize().setY($(window).height());
 	}
 }
 
