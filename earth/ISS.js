@@ -27,6 +27,14 @@ function init() {
 	}
 
 	$(window).resize(updateScreenOverlay);
+
+	//document.getElementById('issnoise').play();
+	myAudio = new Audio('ISSAmbient.mp3'); 
+	myAudio.addEventListener('ended', function() {
+		this.currentTime = 0;
+		this.play();
+	}, false);
+	myAudio.play();
 }
 
 function initCallback(object) {
