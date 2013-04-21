@@ -6,6 +6,7 @@ var aspectRatio = 2000 / 1325;
 
 var fps = 10;
 var issPollInterval = 10000; //10 sec
+var issAltitude = 1809273.5;
 
 var lastTimestamp = 0;
 var currentTimestamp = 0;
@@ -28,58 +29,95 @@ function init() {
 
 	$(window).resize(updateScreenOverlay);
 
-	//document.getElementById('issnoise').play();
 	myAudio = new Audio('ISSAmbient.mp3'); 
 	myAudio.addEventListener('ended', function() {
 		this.currentTime = 0;
 		this.play();
 	}, false);
 	myAudio.play();
+
+	if(navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			//Fly to own location
+			flyToMe(position.coords.latitude, position.coords.longitude);
+
+			//Then fly to spacestation
+			setTimeout(flyToISS, 7000);
+		}, function() {
+			handleNoGeolocation(true);
+			//flyToISS();
+		});
+	}
 }
 
 function initCallback(object) {
 	ge = object;
 	ge.getWindow().setVisibility(true);
 
-	//First call for cordinates, do some special stuff when we get them
- 	$.getJSON('API.php', function(data) {
- 		var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
-		camera.setTilt(camera.getTilt() + 43);
-		camera.setRoll(camera.getRoll() + -15);
-		camera.setLatitude(data.iss_position.latitude);
-		camera.setLongitude(data.iss_position.longitude);
-		camera.setAltitude(1809273.5);
-		ge.getView().setAbstractView(camera);
-		ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
-		initScreenOverlay();
-	});
-
-	setInterval(function(){
-		timestampIteration = timestampIteration + 1;
-		if(lastTimestamp != 0) {
-			var timeDiff = currentTimestamp - lastTimestamp;
-			var timeIterations = timeDiff * fps;
-			projectedLatitude = currentLatitude 
-					+ ((currentLatitude - lastLatitude) 
-						* (timestampIteration / timeIterations)
-					);
-			projectedLongitude = currentLongitude
-					+ ((currentLongitude - lastLongitude) 
-						* (timestampIteration / timeIterations)
-					);
-			updateCamera(projectedLatitude,	projectedLongitude);
-		}
-	},1000/fps);
+	
  
-	setInterval(function(){	
-		fetchISSLoc();
-	},issPollInterval);
-
-	setTimeout(fetchISSLoc,2000);
-	setTimeout(fetchISSLoc,4000);
+	
 }
 
 function failureCallback(object) {
+}
+
+function flyToMe(latitude, longitude) {
+	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	camera.setLatitude(latitude);
+	camera.setLongitude(longitude);
+	camera.setAltitude(200);
+	ge.getOptions().setFlyToSpeed(.3);
+	ge.getView().setAbstractView(camera);
+}
+
+function flyToISS() {
+	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	camera.setAltitude(issAltitude*4);
+	camera.setLatitude(55);
+	camera.setLongitude(55);
+	ge.getOptions().setFlyToSpeed(.3);
+	ge.getView().setAbstractView(camera);
+
+	setTimeout(function(){
+		$.getJSON('API.php', function(data) {
+	 		var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+			camera.setTilt(camera.getTilt() + 43);
+			camera.setRoll(camera.getRoll() + -15);
+			camera.setLatitude(data.iss_position.latitude);
+			camera.setLongitude(data.iss_position.longitude);
+			camera.setAltitude(issAltitude);
+			ge.getView().setAbstractView(camera);
+			//ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+			setTimeout(initScreenOverlay,2000);
+
+			//Then set up animation
+			setTimeout(fetchISSLoc,1000);
+			setTimeout(fetchISSLoc,4000);
+			setInterval(function(){	
+				fetchISSLoc();
+			},issPollInterval);
+
+			setTimeout(function(){
+				setInterval(function(){
+					timestampIteration = timestampIteration + 1;
+					if(lastTimestamp != 0) {
+						var timeDiff = currentTimestamp - lastTimestamp;
+						var timeIterations = timeDiff * fps;
+						projectedLatitude = currentLatitude 
+								+ ((currentLatitude - lastLatitude) 
+									* (timestampIteration / timeIterations)
+								);
+						projectedLongitude = currentLongitude
+								+ ((currentLongitude - lastLongitude) 
+									* (timestampIteration / timeIterations)
+								);
+						updateCamera(projectedLatitude,	projectedLongitude);
+					}
+				},1000/fps)
+			},5000);
+		});
+	},2000);
 }
 
 function fetchISSLoc() {
@@ -99,7 +137,7 @@ function updateCamera(latitude, longitude) {
 
 	camera.setLatitude(latitude);
 	camera.setLongitude(longitude);
-	camera.setAltitude(1809273.5);
+	camera.setAltitude(issAltitude);
 
 	ge.getView().setAbstractView(camera);
 }
@@ -110,7 +148,7 @@ function initScreenOverlay() {
 
 	// Specify a path to the image and set as the icon
 	var icon = ge.createIcon('');
-	icon.setHref(document.URL + 'iss-view-sharper.png');
+	icon.setHref(document.URL + 'cupola.png');
 	screenOverlay.setIcon(icon);
 
 	screenOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
