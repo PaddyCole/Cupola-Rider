@@ -1,19 +1,33 @@
 Cupola-Rider
 ============
 
-Spot the ISS / Space Apps Challenge
+A web and mobile app experience from the perspective of the ISS crew. Showcasing your current location on Earth. Utilising Google maps and Google Earth for the mapping, alongside the Open.Notify API for live ISS location data.
 
-Versions
---------
+Part of the [Space Apps Challenge](http://spaceappschallenge.org/) / [Spot the ISS](http://spaceappschallenge.org/challenge/spot-the-station/). Challenge Project Page can be found [here](http://spaceappschallenge.org/project/cupola-rider/).
 
-* Google Earth
-  
-  Suitibal for desktop web browsers.
 
-  Located in earth/
+Google Earth Version
+--------------------
 
-* Google Maps
+Located in `earth/`
 
-  Suitibal for smartfones.
+Suitable for desktop web browsers.
 
-  Located in phone/
+Demo at http://www.martianapp.com/CupolaRider/earth/
+
+
+
+Google Maps Version
+-------------------
+
+Located in `phone/`
+
+Suitable for smartfones.
+
+Demo at http://www.martianapp.com/CupolaRider/phone/
+
+
+
+Licence
+-------
+You may use Cupola-Rider under the terms of the MIT License
