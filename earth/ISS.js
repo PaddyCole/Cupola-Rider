@@ -66,12 +66,11 @@ function initCallback(object) {
 
 			//Then fly to spacestation
 			setTimeout(function(){
-				flyToISS(position.coords.latitude, position.coords.longitude);
+				flyToISS();
 			}, 7000);
 		}, function() {
-			handleNoGeolocation(true);
-			//flyToISS();
-		});
+			flyToISS();
+		},{ timeout: 5000 });
 	}
 }
 
@@ -88,8 +87,8 @@ function flyToMe(latitude, longitude) {
 	ge.getView().setAbstractView(camera);
 }
 
-function flyToISS(latitude,longitude) {
-	console.log("flyToISS " + latitude + ":" + longitude);
+function flyToISS() {
+	console.log("flyToISS");
 	//var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
 	//camera.setAltitude(issAltitude*4);
 	//camera.setLatitude(latitude);
