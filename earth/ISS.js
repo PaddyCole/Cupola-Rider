@@ -38,7 +38,7 @@ function initCallback(object) {
 
 	$(window).resize(updateScreenOverlay);
 
-	if(navigator.geolocation) {
+	if(Modernizr.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			// Create the placemark.
 			var placemark = ge.createPlacemark('');
@@ -69,8 +69,14 @@ function initCallback(object) {
 				flyToISS();
 			}, 7000);
 		}, function() {
+			console.log("html5 geo location service return no position");
 			flyToISS();
 		},{ timeout: 5000 });
+	} else {
+		console.log("no html5 geo location service availibal");
+		setTimeout(function(){
+			flyToISS();
+		}, 5000);
 	}
 }
 
