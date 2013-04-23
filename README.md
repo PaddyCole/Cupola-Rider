@@ -27,6 +27,12 @@ Suitable for smartfones.
 Demo at http://www.martianapp.com/CupolaRider/phone/
 
 
+About Geolocation
+-----------------
+
+Cupola Rider is using the [html5 geolocation service](http://diveintohtml5.info/geolocation.html). This is not supported by all browsers. If supported it might still not give you current location either. In this case your location is not going to be shown on Earth and you will be taken directly to the ISS Cupola module.
+
+
 
 Licence
 -------
