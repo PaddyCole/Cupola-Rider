@@ -19,6 +19,8 @@ var currentLongitude = 0;
 var projectedLatitude = 0;
 var projectedLongitude = 0;
 
+var cupolaShowing = false;
+
 
 function init() {
 	google.earth.createInstance("map-canvas", initGECallback, failureGECallback);
@@ -34,9 +36,11 @@ function initGECallback(object) {
 	ge = object;
 	ge.getWindow().setVisibility(true);
 
+	initCupolaOverlay();
+
 	//addLogoOverlay();
 
-	$(window).resize(updateScreenOverlay);
+	$(window).resize(updateCupolaOverlay);
 
 	if(Modernizr.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -131,7 +135,8 @@ function flyToISSdone() {
 	
 	ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
 	
-	setTimeout(initScreenOverlay,2000);
+	showCupolaOverlay();
+	startCupolaNosie();
 
 	//Then set up animation
 	setTimeout(fetchISSLoc,1000);
@@ -182,7 +187,16 @@ function updateCamera(latitude, longitude) {
 	ge.getView().setAbstractView(camera);
 }
 
-function initScreenOverlay() {
+function startCupolaNosie() {
+	myAudio = new Audio('ISSAmbient.mp3'); 
+	myAudio.addEventListener('ended', function() {
+		this.currentTime = 0;
+		this.play();
+	}, false);
+	myAudio.play();
+}
+
+function initCupolaOverlay() {
 	// Create the ScreenOverlay
 	var screenOverlay = ge.createScreenOverlay('');
 
@@ -194,26 +208,28 @@ function initScreenOverlay() {
 	screenOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
 	screenOverlay.getSize().setYUnits(ge.UNITS_PIXELS);
 
+	screenOverlay.getOverlayXY().setX(2);
+	screenOverlay.getOverlayXY().setY(2);
+
 	ge.getFeatures().appendChild(screenOverlay);
-
-	updateScreenOverlay();
-
-
-	myAudio = new Audio('ISSAmbient.mp3'); 
-	myAudio.addEventListener('ended', function() {
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	myAudio.play();
 }
 
-function updateScreenOverlay() {
-	if ( ($(window).width() / $(window).height()) > aspectRatio ) {
-		ge.getFeatures().getLastChild().getSize().setX($(window).width());
-		ge.getFeatures().getLastChild().getSize().setY($(window).width()/1.509);
-	} else {
-		ge.getFeatures().getLastChild().getSize().setX($(window).height()/0.6255);
-		ge.getFeatures().getLastChild().getSize().setY($(window).height());
+function showCupolaOverlay() {
+	cupolaShowing = true;
+	ge.getFeatures().getLastChild().getOverlayXY().setX(0.5);
+	ge.getFeatures().getLastChild().getOverlayXY().setY(0.5);
+	updateCupolaOverlay();
+}
+
+function updateCupolaOverlay() {
+	if(cupolaShowing) {
+		if ( ($(window).width() / $(window).height()) > aspectRatio ) {
+			ge.getFeatures().getLastChild().getSize().setX($(window).width());
+			ge.getFeatures().getLastChild().getSize().setY($(window).width()/1.509);
+		} else {
+			ge.getFeatures().getLastChild().getSize().setX($(window).height()/0.6255);
+			ge.getFeatures().getLastChild().getSize().setY($(window).height());
+		}
 	}
 }
 
