@@ -21,7 +21,7 @@ var projectedLongitude = 0;
 
 
 function init() {
-	google.earth.createInstance("map-canvas", initCallback, failureCallback);
+	google.earth.createInstance("map-canvas", initGECallback, failureGECallback);
 
 	if(!google.earth.isInstalled()) {
 		$('#ISSView').hide();
@@ -30,7 +30,7 @@ function init() {
 	
 }
 
-function initCallback(object) {
+function initGECallback(object) {
 	ge = object;
 	ge.getWindow().setVisibility(true);
 
@@ -80,7 +80,8 @@ function initCallback(object) {
 	}
 }
 
-function failureCallback(object) {
+function failureGECallback(object) {
+	//No Google Earth then, don't know what to do..
 }
 
 function flyToMe(latitude, longitude) {
@@ -106,46 +107,57 @@ function flyOutOverMe(latitude, longitude) {
 function flyToISS() {
 	console.log("flyToISS");
 
+	$.getJSON('API.php', function(data) {
+ 		var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+		camera.setTilt(camera.getTilt() + 43);
+		camera.setRoll(camera.getRoll() + -15);
+		camera.setLatitude(data.iss_position.latitude);
+		camera.setLongitude(data.iss_position.longitude);
+		camera.setAltitude(issAltitude);
+		ge.getView().setAbstractView(camera);
+		google.earth.addEventListener(ge.getView(), 'viewchangeend', GEFEeventHandler);
+	});
+}
+var GEFEeventHandler = function flyToISSevent() {
+	if(window['timer'] != undefined){
+		clearTimeout(timer);
+	}
+	timer = setTimeout(flyToISSdone, 200);
+};
+function flyToISSdone() {
+	console.log("flyToISSdone");
+
+	google.earth.removeEventListener(ge.getView(), 'viewchangeend', GEFEeventHandler);
+	
+	ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
+	
+	setTimeout(initScreenOverlay,2000);
+
+	//Then set up animation
+	setTimeout(fetchISSLoc,1000);
+	setTimeout(fetchISSLoc,4000);
+	setInterval(function(){	
+		fetchISSLoc();
+	},issPollInterval);
+
 	setTimeout(function(){
-		$.getJSON('API.php', function(data) {
-	 		var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
-			camera.setTilt(camera.getTilt() + 43);
-			camera.setRoll(camera.getRoll() + -15);
-			camera.setLatitude(data.iss_position.latitude);
-			camera.setLongitude(data.iss_position.longitude);
-			camera.setAltitude(issAltitude);
-			ge.getView().setAbstractView(camera);
-			ge.getOptions().setFlyToSpeed(ge.SPEED_TELEPORT);
-			
-			setTimeout(initScreenOverlay,2000);
-
-			//Then set up animation
-			setTimeout(fetchISSLoc,1000);
-			setTimeout(fetchISSLoc,4000);
-			setInterval(function(){	
-				fetchISSLoc();
-			},issPollInterval);
-
-			setTimeout(function(){
-				setInterval(function(){
-					timestampIteration = timestampIteration + 1;
-					if(lastTimestamp != 0) {
-						var timeDiff = currentTimestamp - lastTimestamp;
-						var timeIterations = timeDiff * fps;
-						projectedLatitude = currentLatitude 
-								+ ((currentLatitude - lastLatitude) 
-									* (timestampIteration / timeIterations)
-								);
-						projectedLongitude = currentLongitude
-								+ ((currentLongitude - lastLongitude) 
-									* (timestampIteration / timeIterations)
-								);
-						updateCamera(projectedLatitude,	projectedLongitude);
-					}
-				},1000/fps)
-			},5000);
-		});
-	},1000);
+		setInterval(function(){
+			timestampIteration = timestampIteration + 1;
+			if(lastTimestamp != 0) {
+				var timeDiff = currentTimestamp - lastTimestamp;
+				var timeIterations = timeDiff * fps;
+				projectedLatitude = currentLatitude 
+						+ ((currentLatitude - lastLatitude) 
+							* (timestampIteration / timeIterations)
+						);
+				projectedLongitude = currentLongitude
+						+ ((currentLongitude - lastLongitude) 
+							* (timestampIteration / timeIterations)
+						);
+				updateCamera(projectedLatitude,	projectedLongitude);
+			}
+		},1000/fps)
+	},5000);
 }
 
 function fetchISSLoc() {
@@ -187,14 +199,12 @@ function initScreenOverlay() {
 	updateScreenOverlay();
 
 
-
 	myAudio = new Audio('ISSAmbient.mp3'); 
 	myAudio.addEventListener('ended', function() {
 		this.currentTime = 0;
 		this.play();
 	}, false);
 	myAudio.play();
-
 }
 
 function updateScreenOverlay() {
