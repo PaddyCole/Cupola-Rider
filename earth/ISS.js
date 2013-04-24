@@ -93,14 +93,18 @@ function flyToMe(latitude, longitude) {
 	ge.getView().setAbstractView(camera);
 }
 
+function flyOutOverMe(latitude, longitude) {
+	console.log("flyOutOverMe " + latitude + ":" + longitude);
+	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	camera.setAltitude(issAltitude*4);
+	camera.setLatitude(latitude);
+	camera.setLongitude(longitude);
+	ge.getOptions().setFlyToSpeed(.3);
+	ge.getView().setAbstractView(camera);
+}
+
 function flyToISS() {
 	console.log("flyToISS");
-	//var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
-	//camera.setAltitude(issAltitude*4);
-	//camera.setLatitude(latitude);
-	//camera.setLongitude(longitude);
-	//ge.getOptions().setFlyToSpeed(.3);
-	//ge.getView().setAbstractView(camera);
 
 	setTimeout(function(){
 		$.getJSON('API.php', function(data) {
