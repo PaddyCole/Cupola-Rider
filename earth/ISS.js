@@ -24,12 +24,6 @@ var cupolaShowing = false;
 
 function init() {
 	google.earth.createInstance("map-canvas", initGECallback, failureGECallback);
-
-	if(!google.earth.isInstalled()) {
-		$('#ISSView').hide();
-	}
-
-	
 }
 
 function initGECallback(object) {
@@ -37,6 +31,12 @@ function initGECallback(object) {
 	ge.getWindow().setVisibility(true);
 
 	initCupolaOverlay();
+
+	fetchISSLoc();
+	setTimeout(fetchISSLoc,4000);
+	setInterval(function(){	
+		fetchISSLoc();
+	},issPollInterval);
 
 	//addLogoOverlay();
 
@@ -139,30 +139,22 @@ function flyToISSdone() {
 	startCupolaNosie();
 
 	//Then set up animation
-	setTimeout(fetchISSLoc,1000);
-	setTimeout(fetchISSLoc,4000);
-	setInterval(function(){	
-		fetchISSLoc();
-	},issPollInterval);
-
-	setTimeout(function(){
-		setInterval(function(){
-			timestampIteration = timestampIteration + 1;
-			if(lastTimestamp != 0) {
-				var timeDiff = currentTimestamp - lastTimestamp;
-				var timeIterations = timeDiff * fps;
-				projectedLatitude = currentLatitude 
-						+ ((currentLatitude - lastLatitude) 
-							* (timestampIteration / timeIterations)
-						);
-				projectedLongitude = currentLongitude
-						+ ((currentLongitude - lastLongitude) 
-							* (timestampIteration / timeIterations)
-						);
-				updateCamera(projectedLatitude,	projectedLongitude);
-			}
-		},1000/fps)
-	},5000);
+	setInterval(function(){
+		timestampIteration = timestampIteration + 1;
+		if(lastTimestamp != 0) {
+			var timeDiff = currentTimestamp - lastTimestamp;
+			var timeIterations = timeDiff * fps;
+			projectedLatitude = currentLatitude 
+					+ ((currentLatitude - lastLatitude) 
+						* (timestampIteration / timeIterations)
+					);
+			projectedLongitude = currentLongitude
+					+ ((currentLongitude - lastLongitude) 
+						* (timestampIteration / timeIterations)
+					);
+			updateCamera(projectedLatitude,	projectedLongitude);
+		}
+	},1000/fps)
 }
 
 function fetchISSLoc() {
