@@ -20,6 +20,7 @@ var projectedLatitude = 0;
 var projectedLongitude = 0;
 
 var cupolaShowing = false;
+var cupolaOverlay = {};
 
 
 function init() {
@@ -190,37 +191,37 @@ function startCupolaNosie() {
 
 function initCupolaOverlay() {
 	// Create the ScreenOverlay
-	var screenOverlay = ge.createScreenOverlay('');
+	cupolaOverlay = ge.createScreenOverlay('');
 
 	// Specify a path to the image and set as the icon
 	var icon = ge.createIcon('');
 	icon.setHref(document.URL + 'cupola.png');
-	screenOverlay.setIcon(icon);
+	cupolaOverlay.setIcon(icon);
 
-	screenOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
-	screenOverlay.getSize().setYUnits(ge.UNITS_PIXELS);
+	cupolaOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
+	cupolaOverlay.getSize().setYUnits(ge.UNITS_PIXELS);
 
-	screenOverlay.getOverlayXY().setX(2);
-	screenOverlay.getOverlayXY().setY(2);
+	cupolaOverlay.getOverlayXY().setX(2);
+	cupolaOverlay.getOverlayXY().setY(2);
 
-	ge.getFeatures().appendChild(screenOverlay);
+	ge.getFeatures().appendChild(cupolaOverlay);
 }
 
 function showCupolaOverlay() {
 	cupolaShowing = true;
-	ge.getFeatures().getLastChild().getOverlayXY().setX(0.5);
-	ge.getFeatures().getLastChild().getOverlayXY().setY(0.5);
+	cupolaOverlay.getOverlayXY().setX(0.5);
+	cupolaOverlay.getOverlayXY().setY(0.5);
 	updateCupolaOverlay();
 }
 
 function updateCupolaOverlay() {
 	if(cupolaShowing) {
 		if ( ($(window).width() / $(window).height()) > aspectRatio ) {
-			ge.getFeatures().getLastChild().getSize().setX($(window).width());
-			ge.getFeatures().getLastChild().getSize().setY($(window).width()/1.509);
+			cupolaOverlay.getSize().setX($(window).width());
+			cupolaOverlay.getSize().setY($(window).width()/1.509);
 		} else {
-			ge.getFeatures().getLastChild().getSize().setX($(window).height()/0.6255);
-			ge.getFeatures().getLastChild().getSize().setY($(window).height());
+			cupolaOverlay.getSize().setX($(window).height()/0.6255);
+			cupolaOverlay.getSize().setY($(window).height());
 		}
 	}
 }
